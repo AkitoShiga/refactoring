@@ -1,0 +1,101 @@
+# 値から参照への変更
+* 同じインスタンスが多数存在するクラスがある。
+* それらを1つのオブジェクトに置き換えたい
+* FactoryMethodによるコンストラクタの置き換えを実践する
+
+## 参照オブジェクトと値オブジェクト
+### 参照オブジェクト
+* 顧客や勘定など、現実世界で一意たりえるもの
+* 同一性
+### 値オブジェクト
+* 日付やお金など、それ自身のデータ値によって定義される
+* 同値性
+
+## 例
+
+```java
+class Customer {
+    public Customer(String name) {
+        _name = name;
+    }
+    public String getName() {
+        return _name;
+    }
+    private finale String _name;
+}
+
+class Order {
+    public Order(String customerName) {
+        _customer = new Customer(customerName);
+    }
+    public void setCustomer(String customerName) {
+        _customer = new Customer(customerName);
+    }
+    public String getCustomerName() {
+        return _customer.getName();
+    }
+    private Customer _customer;
+}
+
+// クライアントのコード
+private static int numberOfOrderFor(Collection orders, String customer) {
+    int result = 0;
+    Iterator iter = orders.iterator();
+    while(iter.hasNext()) {
+        Order each = (Order) iter.next();
+        if(each.getCustomerName().equals(customer)) {
+            result++;
+        }
+    }
+}
+```
+* 現在customerは値オブジェクトである
+* これらを概念的に同じ顧客に対する複数の注文があれば、1つのCustomerオブジェクトを共有するように変更する
+
+## FactoryMethodによるコンストラクタの置き換え
+* Customerクラスのファクトリメソッドの呼び出しで置き換えます
+* Orderクラスのコンストラクタでインスタンス化していたものをCustomerのファクトリメソッドで置き換える
+``` java
+class Customer {
+    public static Customer create(String name) {
+        return new Customer(new);
+    }
+}
+class Order {
+    public Order(String customer) {
+        _customer = Customer.create(customer);
+    }
+}
+```
+## Customerのコンストラクタをprivateにする
+``` java
+private class Customer (String name) {
+    _name = name;
+}
+```
+## Customerクラスへアクセスするためのstaticメソッドを用意する
+
+```java
+private static Dictionary _instances = new Hashtable();
+```
+
+## Customerクラスへアクセスするためのstaticメソッドを用意する
+
+```java
+class Customer {
+    static void loadCustomers() {
+        new Customer("Lemon Car Hire").store();
+        new Customer("Associated Coffee Machines").store();
+        new Customer("Bilston Gasworks").store();
+    }
+    private void store() {
+        _instances.put(this.getName()), this);
+    }
+    public static Customer create(String name) {
+        return (Customer) _instances.get(name);
+    }
+    public static Customer getNamed(String name) {
+        return (Customer) _instances.get(name);
+    }
+}
+```
