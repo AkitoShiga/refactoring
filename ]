@@ -1,0 +1,7 @@
+# オブジェクトそのものの受け渡し
+
+```java
+int low = daysTempRange().getLow();
+int high = daysTempRange().getHigh();
+withinRange = plan.withinRange(low, high);
+```
